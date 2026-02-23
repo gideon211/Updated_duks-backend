@@ -75,12 +75,26 @@ export const addDrink = async (req, res) => {
       });
     }
 
+    // UPDATED: Added oldPrice validation
     for (const pack of parsedPacks) {
       if (!pack.pack || !pack.price) {
         return res.status(400).json({
           success: false,
           message: "Each pack must have both pack size and price",
         });
+      }
+      
+      // Validate and process oldPrice if provided
+      if (pack.oldPrice !== undefined && pack.oldPrice !== null && pack.oldPrice !== "") {
+        pack.oldPrice = parseFloat(pack.oldPrice);
+        if (isNaN(pack.oldPrice) || pack.oldPrice < 0) {
+          return res.status(400).json({
+            success: false,
+            message: "Old price must be a valid positive number",
+          });
+        }
+      } else {
+        pack.oldPrice = null; // No discount
       }
     }
 
@@ -129,11 +143,29 @@ export const updateDrink = async (req, res) => {
       else if (req.file.url) updates.imageUrl = req.file.url;
     }
 
+    // UPDATED: Parse packs and validate oldPrice
     if (updates.packs && typeof updates.packs === "string") {
       try {
         updates.packs = JSON.parse(updates.packs);
       } catch (parseErr) {
         console.error("⚠️ Error parsing packs JSON:", parseErr);
+      }
+    }
+
+    // Validate oldPrice in updated packs
+    if (Array.isArray(updates.packs)) {
+      for (const pack of updates.packs) {
+        if (pack.oldPrice !== undefined && pack.oldPrice !== null && pack.oldPrice !== "") {
+          pack.oldPrice = parseFloat(pack.oldPrice);
+          if (isNaN(pack.oldPrice) || pack.oldPrice < 0) {
+            return res.status(400).json({
+              success: false,
+              message: "Old price must be a valid positive number",
+            });
+          }
+        } else {
+          pack.oldPrice = null;
+        }
       }
     }
 

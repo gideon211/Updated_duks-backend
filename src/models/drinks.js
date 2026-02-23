@@ -9,6 +9,10 @@ const packSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  oldPrice: {  // ← ADDED THIS FIELD
+    type: Number,
+    default: null,  // null means no discount
+  },
 });
 
 const drinkSchema = new mongoose.Schema(
