@@ -12,6 +12,8 @@ import cartRoutes from "./routes/cart.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import orderRoutes from "./routes/orders.js";
 import testEmailRoutes from "./routes/testEmail.js";
+import trainingRoutes from "./routes/trainingRoutes.js";
+import trainingPaymentRoutes from "./routes/trainingPaymentRoutes.js";
 
 dotenv.config();
 
@@ -84,6 +86,8 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/test-email", testEmailRoutes);
+app.use("/api/trainings", trainingRoutes);
+app.use("/api/training-payment", trainingPaymentRoutes);
 
 // Test route
 app.get("/", (req, res) => {

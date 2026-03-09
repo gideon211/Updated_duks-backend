@@ -9,7 +9,9 @@ const SMTP_PORT = process.env.SMTP_PORT || 587;
 const SMTP_SECURE = process.env.SMTP_SECURE === "true"; // false for Gmail TLS
 
 // Default "from" email
-const EMAIL_FROM = process.env.EMAIL_FROM || SMTP_USER || "no-reply@example.com";
+const EMAIL_FROM = process.env.EMAIL_FROM || 
+                   `"Duks Juice Inc." <${SMTP_USER}>` || 
+                   "no-reply@example.com";
 
 // Validate environment
 if (!SMTP_USER || !SMTP_PASS) {
