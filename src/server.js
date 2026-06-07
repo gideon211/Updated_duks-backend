@@ -1,4 +1,6 @@
 import express from "express";
+import http from "http";
+import { Server } from "socket.io";
 import dotenv from "dotenv";
 import cors from "cors";
 import path from "path";
@@ -18,6 +20,9 @@ import quoteRoutes from "./routes/quoteRoutes.js";
 import preorderRoutes from "./routes/preorderRoutes.js";
 import activityLogRoutes from "./routes/activityLog.js";
 import contactRoutes from "./routes/contact.js";
+import notificationRoutes from "./routes/notifications.js";
+import { setSocketIO } from "./utils/notifier.js";
+import jwt from "jsonwebtoken";
 
 dotenv.config();
 
@@ -69,7 +74,6 @@ app.use(
   }
 );
 
-
 // ---------------- Middleware ----------------
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -96,6 +100,7 @@ app.use("/api/quotes", quoteRoutes);
 app.use("/api/preorders", preorderRoutes);
 app.use("/api/activity-logs", activityLogRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // Test route
 app.get("/", (req, res) => {
@@ -126,9 +131,44 @@ mongoose
     process.exit(1);
   });
 
+// ---------------- HTTP + Socket.IO Server ----------------
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: allowedOrigins,
+    credentials: true,
+  },
+});
+
+setSocketIO(io);
+
+io.use((socket, next) => {
+  const token = socket.handshake.auth?.token;
+  if (!token) return next(new Error("Authentication required"));
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded.isAdmin) return next(new Error("Admin access required"));
+    socket.user = decoded;
+    next();
+  } catch {
+    next(new Error("Invalid token"));
+  }
+});
+
+io.on("connection", (socket) => {
+  console.log(`Admin connected: ${socket.id}`);
+  socket.join("admin");
+
+  socket.on("disconnect", () => {
+    console.log(`Admin disconnected: ${socket.id}`);
+  });
+});
+
 // ---------------- Start server ----------------
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
   console.log(`Webhook URL: http://localhost:${PORT}/api/payments/webhook`);

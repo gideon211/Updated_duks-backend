@@ -1,4 +1,5 @@
 import { sendEmail } from "../utils/Email.js";
+import { createNotification } from "../utils/notifier.js";
 
 export const submitContact = async (req, res) => {
   try {
@@ -53,6 +54,14 @@ export const submitContact = async (req, res) => {
       to: adminEmail,
       subject: `Contact Form: ${subject}`,
       html,
+    });
+
+    createNotification({
+      type: "new_contact",
+      title: "New Contact Form Submission",
+      message: `${name} (${email}) sent a message: ${subject}`,
+      link: null,
+      metadata: { name, email, subject },
     });
 
     res.status(200).json({ success: true, message: "Message sent successfully." });

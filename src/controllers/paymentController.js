@@ -6,6 +6,7 @@ import Cart from "../models/cart.js";
 import User from "../models/user.js";
 import { sendEmail } from "../utils/Email.js";
 import { logActivity } from "../utils/activityLogger.js";
+import { createNotification } from "../utils/notifier.js";
 
 /* ==================== HELPERS ==================== */
 
@@ -526,6 +527,14 @@ console.log('WEBHOOK HIT! Event:', req.body?.event, 'Reference:', req.body?.data
       sendCustomerEmail(order, customer, normalizedItems, totalAmount),
       sendAdminEmail(order, customer, normalizedItems, totalAmount),
     ]).catch(err => console.error("Email error:", err));
+
+    createNotification({
+      type: "new_order",
+      title: "New Order Received",
+      message: `${customer.fullName || customer.email} placed an order — GH₵ ${totalAmount.toFixed(2)}`,
+      link: `/admin/orders`,
+      metadata: { orderId: order._id, totalAmount, email: customer.email },
+    });
 
     // Clear cart
     if (userId) {
