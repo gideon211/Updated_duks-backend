@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/user.js";
+import { logActivity } from "../utils/activityLogger.js";
 
 // =======================================================
 // Helper: Generate Tokens (FIXED - includes isAdmin)
@@ -70,6 +71,15 @@ export const signup = async (req, res) => {
 
     const { token, refreshToken } = generateTokens(user);
 
+    logActivity({
+      user: user._id,
+      email: user.email,
+      action: "signup",
+      details: `User ${user.username} created an account`,
+      ip: req.ip,
+      isAdmin: user.isAdmin,
+    });
+
     res.status(201).json({
       message: "User registered successfully",
       token,
@@ -116,6 +126,15 @@ export const login = async (req, res) => {
 
       const { token, refreshToken } = generateTokens(admin); // includes isAdmin:true
 
+      logActivity({
+        user: admin._id,
+        email: admin.email,
+        action: "login",
+        details: `Admin logged in`,
+        ip: req.ip,
+        isAdmin: admin.isAdmin,
+      });
+
       return res.status(200).json({
         message: "Admin logged in successfully",
         token,
@@ -139,6 +158,15 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
 
     const { token, refreshToken } = generateTokens(user);
+
+    logActivity({
+      user: user._id,
+      email: user.email,
+      action: "login",
+      details: `User ${user.username} logged in`,
+      ip: req.ip,
+      isAdmin: user.isAdmin,
+    });
 
     res.json({
       message: "Login successful",
@@ -207,5 +235,59 @@ export const getMe = async (req, res) => {
   } catch (err) {
     console.error("GetMe error:", err);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+/** GET TOTAL USER COUNT (Admin only) */
+export const getUserCount = async (req, res) => {
+  try {
+    const total = await User.countDocuments();
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+    const thisMonth = await User.countDocuments({ createdAt: { $gte: startOfMonth } });
+    res.json({ success: true, total, thisMonth });
+  } catch (err) {
+    console.error("getUserCount error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+/** GET ALL USERS (Admin only) */
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find()
+      .select("-passwordHash")
+      .sort({ createdAt: -1 })
+      .lean();
+    res.json({ success: true, users });
+  } catch (err) {
+    console.error("getAllUsers error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+    res.json({ success: true, message: "User deleted permanently" });
+  } catch (err) {
+    console.error("deleteUser error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export const batchDeleteUsers = async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ success: false, message: "No user IDs provided" });
+    }
+    const result = await User.deleteMany({ _id: { $in: ids } });
+    res.json({ success: true, deleted: result.deletedCount });
+  } catch (err) {
+    console.error("batchDeleteUsers error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };

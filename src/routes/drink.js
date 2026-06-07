@@ -2,6 +2,7 @@ import express from "express";
 import {
   getAllDrinks,
   getDrinkById,
+  getDrinksByCategory,
   addDrink,
   updateDrink,
   deleteDrink,
@@ -19,6 +20,9 @@ const router = express.Router();
 
 // Get all drinks (anyone can access)
 router.get("/", getAllDrinks);
+
+// Get drinks grouped by category (admin)
+router.get("/stats/category", authMiddleware, isAdmin, getDrinksByCategory);
 
 // Get single drink by ID
 router.get("/:id", getDrinkById);

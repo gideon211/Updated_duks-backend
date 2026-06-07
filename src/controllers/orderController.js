@@ -34,20 +34,96 @@ export const getUserOrders = async (req, res) => {
     });
 
     return res.json({ 
-      success: true, 
+      success: true,
+      count: orders.length,
       orders 
     });
   } catch (error) {
     console.error("Get user orders error:", error);
-    logOrderEvent("FETCH_USER_ORDERS_ERROR", {
-      userId: req.user?._id,
-      error: error.message,
-    });
-    
     return res.status(500).json({ 
       success: false,
-      message: "Failed to fetch orders" 
+      message: "Failed to cancel order" 
     });
+  }
+};
+
+/* ==================== DELETE ORDER (ADMIN) ==================== */
+export const deleteOrder = async (req, res) => {
+  try {
+    const order = await Order.findByIdAndDelete(req.params.id);
+    if (!order) return res.status(404).json({ success: false, message: "Order not found" });
+    res.json({ success: true, message: "Order deleted permanently" });
+  } catch (error) {
+    console.error("Delete order error:", error);
+    res.status(500).json({ success: false, message: "Failed to delete order" });
+  }
+};
+
+export const batchDeleteOrders = async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ success: false, message: "No order IDs provided" });
+    }
+    const result = await Order.deleteMany({ _id: { $in: ids } });
+    res.json({ success: true, deleted: result.deletedCount });
+  } catch (error) {
+    console.error("Batch delete orders error:", error);
+    res.status(500).json({ success: false, message: "Failed to delete orders" });
+  }
+};
+
+/* ==================== DELETE CUSTOMER ORDERS (ADMIN) ==================== */
+export const deleteCustomerOrders = async (req, res) => {
+  try {
+    const { email } = req.params;
+    const result = await Order.deleteMany({ "customer.email": email });
+    res.json({ success: true, deleted: result.deletedCount, message: `${result.deletedCount} order(s) deleted for ${email}` });
+  } catch (error) {
+    console.error("Delete customer orders error:", error);
+    res.status(500).json({ success: false, message: "Failed to delete customer orders" });
+  }
+};
+
+export const batchDeleteCustomerOrders = async (req, res) => {
+  try {
+    const { emails } = req.body;
+    if (!Array.isArray(emails) || emails.length === 0) {
+      return res.status(400).json({ success: false, message: "No customer emails provided" });
+    }
+    const result = await Order.deleteMany({ "customer.email": { $in: emails } });
+    res.json({ success: true, deleted: result.deletedCount });
+  } catch (error) {
+    console.error("Batch delete customer orders error:", error);
+    res.status(500).json({ success: false, message: "Failed to delete customer orders" });
+  }
+};
+
+/* ==================== GET CUSTOMERS (ADMIN) ==================== */
+export const getCustomers = async (req, res) => {
+  try {
+    if (!req.user?.isAdmin) {
+      return res.status(403).json({ success: false, message: "Admin access required" });
+    }
+    const customers = await Order.aggregate([
+      {
+        $group: {
+          _id: { $toLower: "$customer.email" },
+          fullName: { $first: "$customer.fullName" },
+          email: { $first: { $toLower: "$customer.email" } },
+          phone: { $first: "$customer.phone" },
+          city: { $first: "$customer.city" },
+          orders: { $sum: 1 },
+          totalSpent: { $sum: { $ifNull: ["$totalAmount", 0] } },
+        },
+      },
+      { $match: { email: { $ne: null } } },
+      { $sort: { orders: -1 } },
+    ]);
+    res.json({ success: true, customers });
+  } catch (error) {
+    console.error("Get customers error:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch customers" });
   }
 };
 
@@ -329,6 +405,68 @@ export const updateOrderStatus = async (req, res) => {
       success: false,
       message: "Failed to update order status" 
     });
+  }
+};
+
+/* ==================== GET PAYMENTS LIST (ADMIN) ==================== */
+export const getPaymentsList = async (req, res) => {
+  try {
+    if (!req.user?.isAdmin) {
+      return res.status(403).json({ success: false, message: "Admin access required" });
+    }
+    const payments = await Order.find({ paymentStatus: { $ne: "pending" } })
+      .sort({ createdAt: -1 })
+      .populate("userId", "email username")
+      .lean();
+    res.json({ success: true, payments });
+  } catch (error) {
+    console.error("Get payments list error:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch payments" });
+  }
+};
+
+/* ==================== GET REVENUE TREND (ADMIN) ==================== */
+export const getRevenueTrend = async (req, res) => {
+  try {
+    if (!req.user?.isAdmin) {
+      return res.status(403).json({ success: false, message: "Admin access required" });
+    }
+
+    // Aggregate paid orders by month for the last 12 months
+    const twelveMonthsAgo = new Date();
+    twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
+
+    const trend = await Order.aggregate([
+      {
+        $match: {
+          paymentStatus: "paid",
+          createdAt: { $gte: twelveMonthsAgo },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+          },
+          revenue: { $sum: "$totalAmount" },
+          orders: { $sum: 1 },
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } },
+    ]);
+
+    const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const formatted = trend.map((t) => ({
+      month: monthNames[t._id.month - 1],
+      revenue: t.revenue,
+      orders: t.orders,
+    }));
+
+    return res.json({ success: true, trend: formatted });
+  } catch (error) {
+    console.error("Get revenue trend error:", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch revenue trend" });
   }
 };
 

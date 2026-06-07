@@ -5,6 +5,13 @@ import {
   getOrderById, 
   getAllOrders, 
   getOrderStats, 
+  getRevenueTrend, 
+  getPaymentsList, 
+  getCustomers, 
+  deleteOrder,
+  batchDeleteOrders,
+  deleteCustomerOrders,
+  batchDeleteCustomerOrders,
   cancelOrder, 
   updateOrderStatus 
 } from "../controllers/orderController.js";
@@ -46,5 +53,26 @@ router.get("/admin/all", authMiddleware, requireAdmin, getAllOrders);
 
 // Update order status (admin only)
 router.patch("/admin/:id/status", authMiddleware, requireAdmin, updateOrderStatus);
+
+// Revenue trend (admin only)
+router.get("/admin/revenue-trend", authMiddleware, requireAdmin, getRevenueTrend);
+
+// Payments list (admin only)
+router.get("/admin/payments", authMiddleware, requireAdmin, getPaymentsList);
+
+// Customers list (admin only) - unique buyers from orders
+router.get("/admin/customers", authMiddleware, requireAdmin, getCustomers);
+
+// Delete order permanently (admin only)
+router.delete("/admin/:id", authMiddleware, requireAdmin, deleteOrder);
+
+// Batch delete orders (admin only)
+router.post("/admin/batch-delete", authMiddleware, requireAdmin, batchDeleteOrders);
+
+// Delete all orders for a customer (admin only)
+router.delete("/admin/customer/:email", authMiddleware, requireAdmin, deleteCustomerOrders);
+
+// Batch delete customer orders (admin only)
+router.post("/admin/customer/batch-delete", authMiddleware, requireAdmin, batchDeleteCustomerOrders);
 
 export default router;

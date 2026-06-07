@@ -5,6 +5,7 @@ import Order from "../models/order.js";
 import Cart from "../models/cart.js";
 import User from "../models/user.js";
 import { sendEmail } from "../utils/Email.js";
+import { logActivity } from "../utils/activityLogger.js";
 
 /* ==================== HELPERS ==================== */
 
@@ -510,6 +511,14 @@ console.log('WEBHOOK HIT! Event:', req.body?.event, 'Reference:', req.body?.data
       reference,
       totalAmount,
       email: customer.email,
+    });
+
+    logActivity({
+      user: userId || null,
+      email: customer.email,
+      action: "order_placed",
+      details: `Order placed — GH₵ ${totalAmount.toFixed(2)}`,
+      metadata: { orderId: order._id, totalAmount, reference },
     });
 
     // Send emails (async, don't block response)

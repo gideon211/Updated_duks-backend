@@ -1,5 +1,6 @@
 import Cart from "../models/cart.js";
 import Drink from "../models/drinks.js";
+import { logActivity } from "../utils/activityLogger.js";
 
 // ---------------- Add item to cart ----------------
 export const addToCart = async (req, res) => {
@@ -28,6 +29,15 @@ export const addToCart = async (req, res) => {
       { new: true, upsert: true, setDefaultsOnInsert: true }
     );
 
+    logActivity({
+      user: userId,
+      email: req.user.email,
+      action: "add_to_cart",
+      details: `Added ${drink.name} (pack ${pack}) × ${quantity} to cart`,
+      metadata: { drinkId, pack, quantity, cartItemId: cartItem._id },
+      isAdmin: req.user.isAdmin,
+    });
+
     res.status(201).json({ message: "Added to cart", cartItem });
   } catch (err) {
     console.error("Add to cart error:", err);
@@ -52,6 +62,14 @@ export const getCartItems = async (req, res) => {
       image: item.drinkId.imageUrl || "",
     }));
 
+    logActivity({
+      user: userId,
+      email: req.user.email,
+      action: "view_cart",
+      details: `Viewed cart (${result.length} items)`,
+      isAdmin: req.user.isAdmin,
+    });
+
     res.json({ cartItems: result });
   } catch (err) {
     console.error("Get cart items error:", err);
@@ -67,6 +85,15 @@ export const removeFromCart = async (req, res) => {
 
     const deletedItem = await Cart.findOneAndDelete({ _id: id, userId });
     if (!deletedItem) return res.status(404).json({ message: "Cart item not found" });
+
+    logActivity({
+      user: userId,
+      email: req.user.email,
+      action: "remove_from_cart",
+      details: `Removed item from cart`,
+      metadata: { cartItemId: id, drinkId: deletedItem.drinkId, pack: deletedItem.pack },
+      isAdmin: req.user.isAdmin,
+    });
 
     res.json({ message: "Item removed from cart", deletedItem });
   } catch (err) {
@@ -95,6 +122,15 @@ export const updateCartItemQuantity = async (req, res) => {
 
     if (!cartItem) return res.status(404).json({ message: "Cart item not found" });
 
+    logActivity({
+      user: userId,
+      email: req.user.email,
+      action: "update_cart_quantity",
+      details: `Updated cart item quantity to ${quantity}`,
+      metadata: { cartItemId: id, quantity, drinkId: cartItem.drinkId },
+      isAdmin: req.user.isAdmin,
+    });
+
     res.json({ message: "Quantity updated", cartItem });
   } catch (err) {
     console.error("Update cart item quantity error:", err);
@@ -121,11 +157,30 @@ export const updateCartItemPack = async (req, res) => {
       existingItem.quantity += cartItem.quantity;
       await existingItem.save();
       await cartItem.deleteOne();
+
+      logActivity({
+        user: userId,
+        email: req.user.email,
+        action: "update_cart_pack",
+        details: `Changed pack to ${pack} (merged with existing)`,
+        metadata: { cartItemId: id, pack, drinkId: cartItem.drinkId },
+        isAdmin: req.user.isAdmin,
+      });
+
       return res.json({ message: "Pack updated (merged with existing item)", cartItem: existingItem });
     }
 
     cartItem.pack = pack;
     await cartItem.save();
+
+    logActivity({
+      user: userId,
+      email: req.user.email,
+      action: "update_cart_pack",
+      details: `Changed pack to ${pack}`,
+      metadata: { cartItemId: id, pack, drinkId: cartItem.drinkId },
+      isAdmin: req.user.isAdmin,
+    });
 
     res.json({ message: "Pack updated", cartItem });
   } catch (err) {
@@ -171,6 +226,15 @@ export const addManyToCart = async (req, res) => {
 
       results.push(cartItem);
     }
+
+    logActivity({
+      user: userId,
+      email: req.user.email,
+      action: "add_to_cart",
+      details: `Added ${results.length} items to cart (batch)`,
+      metadata: { count: results.length, items: results.map((r) => r?._id) },
+      isAdmin: req.user.isAdmin,
+    });
 
     res.status(201).json({
       message: "Batch items added",

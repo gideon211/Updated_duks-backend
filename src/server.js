@@ -14,6 +14,10 @@ import orderRoutes from "./routes/orders.js";
 import testEmailRoutes from "./routes/testEmail.js";
 import trainingRoutes from "./routes/trainingRoutes.js";
 import trainingPaymentRoutes from "./routes/trainingPaymentRoutes.js";
+import quoteRoutes from "./routes/quoteRoutes.js";
+import preorderRoutes from "./routes/preorderRoutes.js";
+import activityLogRoutes from "./routes/activityLog.js";
+import contactRoutes from "./routes/contact.js";
 
 dotenv.config();
 
@@ -88,6 +92,10 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/test-email", testEmailRoutes);
 app.use("/api/trainings", trainingRoutes);
 app.use("/api/training-payment", trainingPaymentRoutes);
+app.use("/api/quotes", quoteRoutes);
+app.use("/api/preorders", preorderRoutes);
+app.use("/api/activity-logs", activityLogRoutes);
+app.use("/api/contact", contactRoutes);
 
 // Test route
 app.get("/", (req, res) => {

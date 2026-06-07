@@ -1,5 +1,23 @@
 import Drink from "../models/drinks.js";
 
+// ================= GET DRINKS BY CATEGORY (Admin)
+export const getDrinksByCategory = async (req, res) => {
+  try {
+    const agg = await Drink.aggregate([
+      { $group: { _id: "$category", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+    ]);
+    const data = agg.map((item) => ({
+      name: item._id || "Uncategorized",
+      count: item.count,
+    }));
+    res.json({ success: true, categories: data });
+  } catch (error) {
+    console.error("Error fetching drinks by category:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 // ================= GET ALL DRINKS (Public)
 export const getAllDrinks = async (req, res) => {
   try {
