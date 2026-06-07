@@ -15,7 +15,7 @@ const EMAIL_FROM = process.env.EMAIL_FROM ||
 
 // Validate environment
 if (!SMTP_USER || !SMTP_PASS) {
-  console.error("❌ Gmail SMTP not configured. Emails will fail until SMTP_USER & SMTP_PASS are set.");
+  console.error("Gmail SMTP not configured. Emails will fail until SMTP_USER & SMTP_PASS are set.");
 }
 
 // Create transporter
@@ -51,10 +51,10 @@ export const sendEmail = async ({ to, subject, html, text }) => {
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log(`📧 Gmail SMTP: email sent to ${to} (messageId: ${info.messageId})`);
+    console.log(`Gmail SMTP: email sent to ${to} (messageId: ${info.messageId})`);
     return info;
   } catch (err) {
-    console.error("❌ Gmail SMTP error:", err.message || err);
+    console.error("Gmail SMTP error:", err.message || err);
     throw err;
   }
 };

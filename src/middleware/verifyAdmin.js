@@ -12,7 +12,7 @@ export const verifyAdmin = (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // ✅ Check if the logged-in user is an admin
+    // Check if the logged-in user is an admin
     if (!decoded.isAdmin) {
       return res.status(403).json({ message: "Access denied: Admins only" });
     }

@@ -10,7 +10,7 @@ export const getAllDrinks = async (req, res) => {
       drinks,
     });
   } catch (error) {
-    console.error("❌ Error fetching drinks:", error);
+    console.error("Error fetching drinks:", error);
     res.status(500).json({
       success: false,
       message: "Server error while fetching drinks",
@@ -28,7 +28,7 @@ export const getDrinkById = async (req, res) => {
     }
     res.status(200).json({ success: true, drink });
   } catch (error) {
-    console.error("❌ Error fetching drink:", error);
+    console.error("Error fetching drink:", error);
     res.status(500).json({
       success: false,
       message: "Server error while fetching drink",
@@ -60,7 +60,7 @@ export const addDrink = async (req, res) => {
       try {
         parsedPacks = typeof packs === "string" ? JSON.parse(packs) : packs;
       } catch (parseErr) {
-        console.error("⚠️ Error parsing packs JSON:", parseErr);
+        console.error("Error parsing packs JSON:", parseErr);
         return res.status(400).json({
           success: false,
           message: "Invalid packs format",
@@ -115,11 +115,11 @@ export const addDrink = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "✅ Drink added successfully",
+      message: "Drink added successfully",
       drink: savedDrink,
     });
   } catch (error) {
-    console.error("❌ Error adding drink:", error);
+    console.error("Error adding drink:", error);
     res.status(500).json({
       success: false,
       message: "Server error while adding drink",
@@ -148,7 +148,7 @@ export const updateDrink = async (req, res) => {
       try {
         updates.packs = JSON.parse(updates.packs);
       } catch (parseErr) {
-        console.error("⚠️ Error parsing packs JSON:", parseErr);
+        console.error("Error parsing packs JSON:", parseErr);
       }
     }
 
@@ -176,11 +176,11 @@ export const updateDrink = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "✅ Drink updated successfully",
+      message: "Drink updated successfully",
       drink: updatedDrink,
     });
   } catch (error) {
-    console.error("❌ Error updating drink:", error);
+    console.error("Error updating drink:", error);
     res.status(500).json({
       success: false,
       message: "Server error while updating drink",
@@ -201,10 +201,10 @@ export const deleteDrink = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "✅ Drink deleted successfully",
+      message: "Drink deleted successfully",
     });
   } catch (error) {
-    console.error("❌ Error deleting drink:", error);
+    console.error("Error deleting drink:", error);
     res.status(500).json({
       success: false,
       message: "Server error while deleting drink",

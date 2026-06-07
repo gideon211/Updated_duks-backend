@@ -50,7 +50,7 @@ const sendCustomerEmail = async (registration, participant) => {
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: #0f5132; color: #fff; padding: 20px; border-radius: 8px 8px 0 0;">
-          <h2 style="margin: 0;">Training Registration Confirmed ✅</h2>
+          <h2 style="margin: 0;">Training Registration Confirmed</h2>
         </div>
         <div style="padding: 20px; border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 8px 8px;">
           <p>Hi ${participant.fullName},</p>
@@ -74,7 +74,7 @@ const sendCustomerEmail = async (registration, participant) => {
           </div>
 
           <div style="background: #fff3cd; padding: 15px; border-radius: 5px; margin-top: 20px; border-left: 4px solid #ffc107;">
-            <p style="margin: 0; font-weight: bold; color: #856404;">📍 Important Information:</p>
+            <p style="margin: 0; font-weight: bold; color: #856404;">Important Information:</p>
             <p style="margin: 10px 0 0; color: #856404;">
               Please arrive 15 minutes early on your first day, Thank you!
             </p>
@@ -114,7 +114,7 @@ const sendAdminEmail = async (registration, participant) => {
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto;">
         <div style="background: #0f5132; color: #fff; padding: 20px; border-radius: 8px 8px 0 0;">
-          <h2 style="margin: 0;">🏋️ New Training Registration</h2>
+          <h2 style="margin: 0;">New Training Registration</h2>
           <p style="margin: 10px 0 0;">Registration ID: <strong>${registration._id}</strong></p>
         </div>
         
@@ -165,7 +165,7 @@ const sendAdminEmail = async (registration, participant) => {
 
     await sendEmail({
       to: process.env.ADMIN_EMAIL,
-      subject: `🏋️ New Training Registration — ${participant.fullName}`,
+      subject: `New Training Registration — ${participant.fullName}`,
       html,
     });
 
@@ -347,7 +347,7 @@ export const initializeTrainingPayment = async (req, res) => {
 
 /* ==================== 2. PAYSTACK WEBHOOK ==================== */
 export const webhookTrainingPayment = async (req, res) => {
-  console.log('🔔 TRAINING WEBHOOK HIT! Event:', req.body?.event, 'Reference:', req.body?.data?.reference);
+  console.log('TRAINING WEBHOOK HIT! Event:', req.body?.event, 'Reference:', req.body?.data?.reference);
   
   try {
     // CRITICAL: Verify webhook signature
@@ -411,9 +411,9 @@ export const webhookTrainingPayment = async (req, res) => {
         try {
           await sendEmail({
             to: process.env.ADMIN_EMAIL,
-            subject: `🚨 Training Payment Amount Mismatch - ${reference}`,
+            subject: `Training Payment Amount Mismatch - ${reference}`,
             html: `
-              <h2>⚠️ Payment Amount Mismatch Detected</h2>
+              <h2>Payment Amount Mismatch Detected</h2>
               <p><strong>Reference:</strong> ${reference}</p>
               <p><strong>Paystack Amount:</strong> ₵${(paystackAmount / 100).toFixed(2)}</p>
               <p><strong>Expected Amount:</strong> ₵${price.toFixed(2)}</p>

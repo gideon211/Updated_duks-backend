@@ -6,26 +6,26 @@ import {
   updateDrink,
   deleteDrink,
 } from "../controllers/drinkController.js";
-import { authMiddleware, isAdmin } from "../middleware/authMiddleware.js"; // ✅ updated import
+import { authMiddleware, isAdmin } from "../middleware/authMiddleware.js"; // updated import
 import upload from "../middleware/upload.js";
 
 const router = express.Router();
 
 /**
  * ==========================
- * 🟢 PUBLIC ROUTES
+ * PUBLIC ROUTES
  * ==========================
  */
 
-// ✅ Get all drinks (anyone can access)
+// Get all drinks (anyone can access)
 router.get("/", getAllDrinks);
 
-// ✅ Get single drink by ID
+// Get single drink by ID
 router.get("/:id", getDrinkById);
 
 /**
  * ==========================
- * 🔒 ADMIN ROUTES
+ * ADMIN ROUTES
  * ==========================
  *
  * These routes require:
@@ -34,7 +34,7 @@ router.get("/:id", getDrinkById);
  * - Optionally, image upload via Multer
  */
 
-// ✅ Add a new drink (with optional image upload)
+// Add a new drink (with optional image upload)
 router.post(
   "/add",
   authMiddleware,
@@ -43,7 +43,7 @@ router.post(
   addDrink
 );
 
-// ✅ Update a drink (image can also be updated)
+// Update a drink (image can also be updated)
 router.put(
   "/:id",
   authMiddleware,
@@ -52,7 +52,7 @@ router.put(
   updateDrink
 );
 
-// ✅ Delete a drink by ID
+// Delete a drink by ID
 router.delete(
   "/:id",
   authMiddleware,

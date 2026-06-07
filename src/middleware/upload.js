@@ -5,21 +5,21 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// ✅ Configure Cloudinary
+// Configure Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// ✅ Set up Cloudinary storage
+// Set up Cloudinary storage
 const storage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: "drinkshop_uploads", // Folder name in your Cloudinary account
     allowed_formats: ["jpg", "png", "jpeg"],
     public_id: (req, file) => {
-      // 🧹 Sanitize filename to remove invalid Cloudinary characters
+      // Sanitize filename to remove invalid Cloudinary characters
       const cleanName = file.originalname
         .replace(/[^\w.-]/g, "_") // Replace invalid characters with underscore
         .toLowerCase();
@@ -28,17 +28,17 @@ const storage = new CloudinaryStorage({
   },
 });
 
-// ✅ File filter (only images)
+// File filter (only images)
 const fileFilter = (req, file, cb) => {
   const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error("❌ Only .jpeg, .jpg, and .png files are allowed"), false);
+    cb(new Error("Only .jpeg, .jpg, and .png files are allowed"), false);
   }
 };
 
-// ✅ Export upload middleware
+// Export upload middleware
 const upload = multer({
   storage,
   fileFilter,

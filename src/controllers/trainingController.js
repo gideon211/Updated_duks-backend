@@ -11,7 +11,7 @@ export const getAllTrainings = async (req, res) => {
       trainings,
     });
   } catch (error) {
-    console.error("❌ Error fetching trainings:", error);
+    console.error("Error fetching trainings:", error);
     res.status(500).json({
       success: false,
       message: "Server error while fetching trainings",
@@ -32,7 +32,7 @@ export const getTrainingById = async (req, res) => {
     }
     res.status(200).json({ success: true, training });
   } catch (error) {
-    console.error("❌ Error fetching training:", error);
+    console.error("Error fetching training:", error);
     res.status(500).json({
       success: false,
       message: "Server error while fetching training",
@@ -88,11 +88,11 @@ export const addTraining = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "✅ Training added successfully",
+      message: "Training added successfully",
       training: savedTraining,
     });
   } catch (error) {
-    console.error("❌ Error adding training:", error);
+    console.error("Error adding training:", error);
     res.status(500).json({
       success: false,
       message: "Server error while adding training",
@@ -139,11 +139,11 @@ export const updateTraining = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "✅ Training updated successfully",
+      message: "Training updated successfully",
       training: updatedTraining,
     });
   } catch (error) {
-    console.error("❌ Error updating training:", error);
+    console.error("Error updating training:", error);
     res.status(500).json({
       success: false,
       message: "Server error while updating training",
@@ -167,10 +167,10 @@ export const deleteTraining = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "✅ Training deleted successfully",
+      message: "Training deleted successfully",
     });
   } catch (error) {
-    console.error("❌ Error deleting training:", error);
+    console.error("Error deleting training:", error);
     res.status(500).json({
       success: false,
       message: "Server error while deleting training",
@@ -192,7 +192,7 @@ export const getAllRegistrations = async (req, res) => {
       registrations,
     });
   } catch (error) {
-    console.error("❌ Error fetching registrations:", error);
+    console.error("Error fetching registrations:", error);
     res.status(500).json({
       success: false,
       message: "Server error while fetching registrations",

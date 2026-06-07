@@ -42,9 +42,9 @@ const signature = crypto
   .update(payloadString)
   .digest('hex');
 
-console.log('🔐 Signature:', signature.substring(0, 50) + '...');
-console.log('📤 Sending webhook to:', WEBHOOK_URL);
-console.log('📝 Reference:', payload.data.reference);
+console.log('Signature:', signature.substring(0, 50) + '...');
+console.log('Sending webhook to:', WEBHOOK_URL);
+console.log('Reference:', payload.data.reference);
 console.log('');
 
 // Parse URL
@@ -72,16 +72,16 @@ const req = https.request(options, (res) => {
   });
 
   res.on('end', () => {
-    console.log('✅ Response Status:', res.statusCode);
-    console.log('✅ Response:', data);
+    console.log('Response Status:', res.statusCode);
+    console.log('Response:', data);
     console.log('');
-    console.log('📧 Check your email for order confirmation!');
-    console.log('🖥️  Check your server console for logs!');
+    console.log('Check your email for order confirmation!');
+    console.log('Check your server console for logs!');
   });
 });
 
 req.on('error', (error) => {
-  console.error('❌ Error:', error.message);
+  console.error('Error:', error.message);
 });
 
 req.write(payloadString);

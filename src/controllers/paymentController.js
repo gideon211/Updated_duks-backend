@@ -87,7 +87,7 @@ const sendCustomerEmail = async (order, customer, items, totalAmount) => {
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: #0f5132; color: #fff; padding: 20px; border-radius: 8px 8px 0 0;">
-          <h2 style="margin: 0;">Order Confirmed ✅</h2>
+          <h2 style="margin: 0;">Order Confirmed</h2>
         </div>
         <div style="padding: 20px; border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 8px 8px;">
           <p>Hi ${customer.fullName},</p>
@@ -159,7 +159,7 @@ const sendAdminEmail = async (order, customer, items, totalAmount) => {
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto;">
         <div style="background: #0f5132; color: #fff; padding: 20px; border-radius: 8px 8px 0 0;">
-          <h2 style="margin: 0;">🛒 New Order Received</h2>
+          <h2 style="margin: 0;">New Order Received</h2>
           <p style="margin: 10px 0 0;">Order ID: <strong>${order._id}</strong></p>
         </div>
         
@@ -218,7 +218,7 @@ const sendAdminEmail = async (order, customer, items, totalAmount) => {
 
     await sendEmail({
       to: process.env.ADMIN_EMAIL,
-      subject: `🛒 New Order — ₵${totalAmount.toFixed(2)}`,
+      subject: `New Order — ₵${totalAmount.toFixed(2)}`,
       html,
     });
 
@@ -391,7 +391,7 @@ export const initializePayment = async (req, res) => {
 
 /* ==================== 2. PAYSTACK WEBHOOK ==================== */
 export const webhookPayment = async (req, res) => {
-console.log('🔔 WEBHOOK HIT! Event:', req.body?.event, 'Reference:', req.body?.data?.reference); 
+console.log('WEBHOOK HIT! Event:', req.body?.event, 'Reference:', req.body?.data?.reference); 
   try {
     // CRITICAL: Verify webhook signature
     if (!verifyPaystackSignature(req)) {
@@ -451,9 +451,9 @@ console.log('🔔 WEBHOOK HIT! Event:', req.body?.event, 'Reference:', req.body?
         try {
           await sendEmail({
             to: process.env.ADMIN_EMAIL,
-            subject: `🚨 Payment Amount Mismatch - ${reference}`,
+            subject: `Payment Amount Mismatch - ${reference}`,
             html: `
-              <h2>⚠️ Payment Amount Mismatch Detected</h2>
+              <h2>Payment Amount Mismatch Detected</h2>
               <p><strong>Reference:</strong> ${reference}</p>
               <p><strong>Paystack Amount:</strong> ₵${(paystackAmount / 100).toFixed(2)}</p>
               <p><strong>Expected Amount:</strong> ₵${totalAmount.toFixed(2)}</p>

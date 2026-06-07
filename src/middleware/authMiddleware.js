@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-/** 🔐 Auth Middleware — Validate Access Token */
+/** Auth Middleware — Validate Access Token */
 export const authMiddleware = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -17,7 +17,7 @@ export const authMiddleware = async (req, res, next) => {
 
     const token = authHeader.split(" ")[1];
 
-    // ✅ FIXED: Your login token uses "id", not "userId"
+    // FIXED: Your login token uses "id", not "userId"
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const user = await User.findById(decoded.id).select("-passwordHash");
@@ -28,12 +28,12 @@ export const authMiddleware = async (req, res, next) => {
     req.user = user;
     next();
   } catch (err) {
-    console.error("❌ Token verification failed:", err.message);
+    console.error("Token verification failed:", err.message);
     return res.status(401).json({ message: "Invalid or expired token" });
   }
 };
 
-/** 👑 Admin-Only Access Middleware */
+/** Admin-Only Access Middleware */
 export const isAdmin = (req, res, next) => {
   try {
     if (!req.user) {
@@ -49,7 +49,7 @@ export const isAdmin = (req, res, next) => {
 
     next();
   } catch (err) {
-    console.error("❌ Admin check failed:", err.message);
+    console.error("Admin check failed:", err.message);
     res.status(500).json({ message: "Server error checking admin status" });
   }
 };

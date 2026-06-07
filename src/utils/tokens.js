@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 /**
- * ✅ Create an Access Token
+ * Create an Access Token
  * - Includes user id and isAdmin flag
  * - Defaults to 15m unless overridden by .env
  */
@@ -22,7 +22,7 @@ export function signAccessToken(user) {
 }
 
 /**
- * ✅ Create a Refresh Token
+ * Create a Refresh Token
  * - Also includes isAdmin to preserve user role on refresh
  */
 export function signRefreshToken(user) {
@@ -37,21 +37,21 @@ export function signRefreshToken(user) {
 }
 
 /**
- * ✅ Hash token for secure storage (optional)
+ * Hash token for secure storage (optional)
  */
 export async function hashToken(token) {
   return bcrypt.hash(token, 10);
 }
 
 /**
- * ✅ Compare token hashes
+ * Compare token hashes
  */
 export async function compareToken(hash, token) {
   return bcrypt.compare(token, hash);
 }
 
 /**
- * ✅ Verify Access or Refresh Token
+ * Verify Access or Refresh Token
  * - Returns decoded payload (id + isAdmin)
  */
 export function verifyToken(token, isRefresh = false) {

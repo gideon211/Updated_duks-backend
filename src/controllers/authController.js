@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 
 // =======================================================
-// 🔐 Helper: Generate Tokens (✅ FIXED - includes isAdmin)
+// Helper: Generate Tokens (FIXED - includes isAdmin)
 // =======================================================
 const generateTokens = (user) => {
   const payload = {
@@ -20,7 +20,7 @@ const generateTokens = (user) => {
 
 
 // =======================================================
-// 🧩 Helper: Fixed Admin Check
+// Helper: Fixed Admin Check
 // =======================================================
 const isFixedAdmin = (email, password) => {
   const admins = [
@@ -48,7 +48,7 @@ const isFixedAdmin = (email, password) => {
 };
 
 // =======================================================
-// 🧾 SIGNUP Controller
+// SIGNUP Controller
 // =======================================================
 export const signup = async (req, res) => {
   try {
@@ -88,7 +88,7 @@ export const signup = async (req, res) => {
 };
 
 // =======================================================
-// 🔑 LOGIN Controller (✅ FIXED)
+// LOGIN Controller (FIXED)
 // =======================================================
 export const login = async (req, res) => {
   try {
@@ -96,7 +96,7 @@ export const login = async (req, res) => {
     if (!email || !password)
       return res.status(400).json({ message: "All fields are required" });
 
-    // 🧩 Check fixed admin credentials
+    // Check fixed admin credentials
     const matchedAdmin = isFixedAdmin(email, password);
     if (matchedAdmin) {
       let admin = await User.findOne({ email: matchedAdmin.email });
@@ -114,7 +114,7 @@ export const login = async (req, res) => {
         await admin.save();
       }
 
-      const { token, refreshToken } = generateTokens(admin); // ✅ includes isAdmin:true
+      const { token, refreshToken } = generateTokens(admin); // includes isAdmin:true
 
       return res.status(200).json({
         message: "Admin logged in successfully",
@@ -129,7 +129,7 @@ export const login = async (req, res) => {
       });
     }
 
-    // ✅ Regular user login
+    // Regular user login
     const user = await User.findOne({ email });
     if (!user)
       return res.status(404).json({ message: "User not found" });
@@ -158,14 +158,14 @@ export const login = async (req, res) => {
 };
 
 // =======================================================
-// 🚪 LOGOUT Controller
+// LOGOUT Controller
 // =======================================================
 export const logout = (req, res) => {
   res.json({ message: "Logout successful — remove token on client side" });
 };
 
 // =======================================================
-// 🔁 REFRESH TOKEN Controller (✅ uses isAdmin)
+// REFRESH TOKEN Controller (uses isAdmin)
 // =======================================================
 export const refresh = (req, res) => {
   const { refreshToken } = req.body;
@@ -179,7 +179,7 @@ export const refresh = (req, res) => {
         .json({ message: "Invalid or expired refresh token" });
 
     const newAccessToken = jwt.sign(
-      { id: decoded.id, isAdmin: decoded.isAdmin }, // ✅ preserve admin flag
+      { id: decoded.id, isAdmin: decoded.isAdmin }, // preserve admin flag
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
@@ -192,7 +192,7 @@ export const refresh = (req, res) => {
 };
 
 // =======================================================
-// 👤 GET CURRENT USER Controller
+// GET CURRENT USER Controller
 // =======================================================
 export const getMe = async (req, res) => {
   try {

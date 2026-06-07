@@ -19,14 +19,14 @@ const cartSchema = new mongoose.Schema(
       min: 1,
     },
     pack: {
-      type: Number, // ✅ added pack as a number
+      type: Number, // added pack as a number
       required: true,
     },
   },
   { timestamps: true }
 );
 
-// ✅ Compound unique index to prevent duplicate items for same user, drink, and pack
+// Compound unique index to prevent duplicate items for same user, drink, and pack
 cartSchema.index({ userId: 1, drinkId: 1, pack: 1 }, { unique: true });
 
 export default mongoose.model("Cart", cartSchema);

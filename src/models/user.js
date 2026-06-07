@@ -20,13 +20,13 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
 
-    // ✅ Role (admin / user)
+    // Role (admin / user)
     isAdmin: {
       type: Boolean,
       default: false,
     },
 
-    // ✅ Track last login time
+    // Track last login time
     lastLogin: {
       type: Date,
       default: null,

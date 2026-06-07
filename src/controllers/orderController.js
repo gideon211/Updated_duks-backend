@@ -268,9 +268,9 @@ export const updateOrderStatus = async (req, res) => {
     if (emailStatuses.includes(orderStatus) && order.customer?.email) {
       try {
         const statusMessages = {
-          shipped: "Your order has been shipped and is on its way! 📦",
-          delivered: "Your order has been delivered. We hope you enjoy it! 🎉",
-          completed: "Your order is complete. Thank you for shopping with us! ✅",
+          shipped: "Your order has been shipped and is on its way!",
+          delivered: "Your order has been delivered. We hope you enjoy it!",
+          completed: "Your order is complete. Thank you for shopping with us!",
         };
 
         await sendEmail({

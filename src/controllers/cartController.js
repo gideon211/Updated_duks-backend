@@ -30,7 +30,7 @@ export const addToCart = async (req, res) => {
 
     res.status(201).json({ message: "Added to cart", cartItem });
   } catch (err) {
-    console.error("❌ Add to cart error:", err);
+    console.error("Add to cart error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
@@ -54,7 +54,7 @@ export const getCartItems = async (req, res) => {
 
     res.json({ cartItems: result });
   } catch (err) {
-    console.error("❌ Get cart items error:", err);
+    console.error("Get cart items error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
@@ -70,7 +70,7 @@ export const removeFromCart = async (req, res) => {
 
     res.json({ message: "Item removed from cart", deletedItem });
   } catch (err) {
-    console.error("❌ Remove from cart error:", err);
+    console.error("Remove from cart error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
@@ -97,7 +97,7 @@ export const updateCartItemQuantity = async (req, res) => {
 
     res.json({ message: "Quantity updated", cartItem });
   } catch (err) {
-    console.error("❌ Update cart item quantity error:", err);
+    console.error("Update cart item quantity error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
@@ -129,7 +129,7 @@ export const updateCartItemPack = async (req, res) => {
 
     res.json({ message: "Pack updated", cartItem });
   } catch (err) {
-    console.error("❌ Update cart item pack error:", err);
+    console.error("Update cart item pack error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
@@ -177,7 +177,7 @@ export const addManyToCart = async (req, res) => {
       cartItems: results,
     });
   } catch (err) {
-    console.error("❌ AddMany error:", err);
+    console.error("AddMany error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };

@@ -45,7 +45,7 @@ app.use(cors({
   credentials: true,
 }));
 
-// ⚠️ CRITICAL: Webhook MUST be configured BEFORE express.json()
+// CRITICAL: Webhook MUST be configured BEFORE express.json()
 app.use(
   "/api/payments/webhook",
   express.raw({ type: "application/json" }),
@@ -75,7 +75,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Request logger
 app.use((req, res, next) => {
-  console.log(`🟢 ${req.method} ${req.originalUrl}`);
+  console.log(`${req.method} ${req.originalUrl}`);
   next();
 });
 
@@ -91,7 +91,7 @@ app.use("/api/training-payment", trainingPaymentRoutes);
 
 // Test route
 app.get("/", (req, res) => {
-  res.send("Drink Shop Backend Running 🚀");
+  res.send("Drink Shop Backend Running");
 });
 
 // ---------------- Unknown route handler ----------------
@@ -101,7 +101,7 @@ app.use((req, res) => {
 
 // ---------------- Global error handler ----------------
 app.use((err, req, res, next) => {
-  console.error("💥 Server Error:", err);
+  console.error("Server Error:", err);
   res.status(err.status || 500).json({
     success: false,
     message: err.message || "Internal Server Error",
@@ -112,18 +112,18 @@ app.use((err, req, res, next) => {
 // ---------------- MongoDB Connection ----------------
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB connected successfully"))
+  .then(() => console.log("MongoDB connected successfully"))
   .catch((err) => {
-    console.error("❌ MongoDB connection error:", err.message);
+    console.error("MongoDB connection error:", err.message);
     process.exit(1);
   });
 
 // ---------------- Start server ----------------
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📍 Environment: ${process.env.NODE_ENV || "development"}`);
-  console.log(`🔗 Webhook URL: http://localhost:${PORT}/api/payments/webhook`);
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+  console.log(`Webhook URL: http://localhost:${PORT}/api/payments/webhook`);
 });
 
 export default app;
